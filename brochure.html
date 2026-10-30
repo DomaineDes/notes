@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domaine Desvignes – Brochure</title>
+<style>
+  :root {
+    --creme: #F5EFE0;
+    --beige: #D9CEBC;
+    --brun:  #80363A;
+    --noir:  #1C1A17;
+    --blanc: #FAF7F2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--creme);
+    font-family: Georgia, serif;
+    color: var(--noir);
+  }
+
+  /* Conteneur des pages */
+  #pages {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+    background: var(--blanc);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    /* empêche l'appui long / clic droit sur l'image */
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  #message {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--brun);
+    letter-spacing: 0.1em;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<div id="pages">
+  <p id="message">Chargement de la brochure…</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  // ➜ Nom exact de votre fichier PDF (dans le même dépôt GitHub)
+  const PDF_URL = "brochure.pdf";
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  const container = document.getElementById("pages");
+  const message = document.getElementById("message");
+
+  // Bloque le clic droit sur les pages
+  container.addEventListener("contextmenu", e => e.preventDefault());
+
+  pdfjsLib.getDocument(PDF_URL).promise
+    .then(async pdf => {
+      message.remove();
+      const ratio = window.devicePixelRatio || 1;
+
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const base = page.getViewport({ scale: 1 });
+        // On rend à ~1600px de large pour une bonne netteté
+        const scale = (1600 / base.width) * Math.min(ratio, 2) / 2;
+        const viewport = page.getViewport({ scale: Math.max(scale, 1.5) });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        container.appendChild(canvas);
+
+        await page.render({
+          canvasContext: canvas.getContext("2d"),
+          viewport
+        }).promise;
+      }
+    })
+    .catch(() => {
+      message.textContent =
+        "Impossible de charger la brochure. Vérifiez le nom du fichier PDF.";
+    });
+</script>
+
+</body>
+</html>
