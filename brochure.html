@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Domaine Desvignes – Brochure</title>
+<title>Domaine Desvignes – Notes</title>
 <style>
   :root {
     --creme: #F5EFE0;
@@ -58,7 +58,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
   // ➜ Nom exact de votre fichier PDF (dans le même dépôt GitHub)
-  const PDF_URL = "brochure.pdf";
+  const PDF_URL = "notes-fr.pdf";
 
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -94,7 +94,7 @@
     })
     .catch(() => {
       message.textContent =
-        "Impossible de charger la brochure. Vérifiez le nom du fichier PDF.";
+        "Impossible de charger les notes. Vérifiez le nom du fichier PDF.";
     });
 </script>
 
